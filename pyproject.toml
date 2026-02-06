@@ -1,0 +1,75 @@
+[tool.poetry]
+name = "watflow"
+version = "0.1.0"
+description = "WAT Framework for AI-powered workflow automations"
+readme = "README.md"
+license = "MIT"
+authors = ["cilladev"]
+keywords = ["automation", "workflow", "ai", "claude", "agents"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+packages = [
+    { include = "watflow" },
+    { include = "template" },
+]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<4.0"
+pyyaml = ">=6.0"
+python-dotenv = ">=1.0"
+click = ">=8.0"
+rich = ">=13.0"
+
+# Optional dependencies for extras
+google-auth-oauthlib = { version = ">=1.0", optional = true }
+google-auth-httplib2 = { version = ">=0.2", optional = true }
+google-api-python-client = { version = ">=2.0", optional = true }
+anthropic = { version = ">=0.18.0", optional = true }
+pydantic = { version = ">=2.0", optional = true }
+modal = { version = ">=0.64.0", optional = true }
+
+[tool.poetry.extras]
+gmail = ["google-auth-oauthlib", "google-auth-httplib2", "google-api-python-client"]
+claude = ["anthropic", "pydantic"]
+modal = ["modal"]
+google = ["google-auth-oauthlib", "google-auth-httplib2", "google-api-python-client"]
+deploy = ["modal"]
+all = ["google-auth-oauthlib", "google-auth-httplib2", "google-api-python-client", "anthropic", "pydantic", "modal"]
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=7.0"
+ruff = ">=0.8.0"
+mypy = ">=1.0"
+pre-commit = ">=3.0"
+
+[tool.poetry.scripts]
+wat = "watflow.cli:main"
+
+[tool.poetry.urls]
+Homepage = "https://github.com/cilladev/watflow"
+Repository = "https://github.com/cilladev/watflow"
+Documentation = "https://github.com/cilladev/watflow#readme"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_ignores = true

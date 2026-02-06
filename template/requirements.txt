@@ -1,0 +1,13 @@
+# WATFlow framework
+watflow>=0.1.0
+
+# Core dependencies
+python-dotenv>=1.0.0
+pyyaml>=6.0
+requests>=2.28.0
+rich>=13.0.0
+
+# AI
+anthropic>=0.39.0
+
+# Add workflow-specific dependencies below

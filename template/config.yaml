@@ -1,0 +1,94 @@
+# Workflow Configuration
+# See https://github.com/your-org/wf-automation for documentation
+
+# ===========================================
+# REQUIREMENTS (validated before workflow runs)
+# ===========================================
+# Define environment variables and files that must exist.
+# Workflow fails fast with clear error messages if missing.
+
+requirements:
+  env: []           # e.g., ["API_KEY", "DATABASE_URL"]
+  files: []         # e.g., ["credentials.json", "token.json"]
+
+# ===========================================
+# WORKFLOW SETTINGS
+# ===========================================
+
+workflow:
+  name: "My Workflow"
+  description: "Brief description of what this workflow does"
+  version: "0.1.0"
+
+# Default settings for all phases (phases can override these)
+defaults:
+  parallel: false       # Run tools sequentially by default
+  max_workers: 4        # Max parallel workers when parallel: true
+  timeout: 120          # Tool timeout in seconds
+  critical: true        # Stop workflow on failure
+  min_success: 0        # Minimum tools that must succeed
+
+# Workflow phases - executed in order
+# Each phase can override default settings
+# You can define ANY phase names you want - just follow the schema
+phases:
+  - name: collect
+    parallel: true      # Data collection benefits from parallelism
+    max_workers: 5
+    timeout: 300
+    critical: false     # Don't stop if some collectors fail
+    min_success: 1      # At least 1 tool must succeed
+    tools:
+      - example_tool.py  # Example tool - replace with your tools
+
+  - name: process
+    parallel: false     # Process sequentially (order matters)
+    timeout: 120
+    tools: []           # Add your tools: ["transform_data.py"]
+
+  - name: analyze
+    parallel: false
+    timeout: 180
+    tools: []           # Add your tools: ["analyze_data.py"]
+
+  - name: deliver
+    parallel: true      # Can send multiple outputs in parallel
+    max_workers: 3
+    timeout: 60
+    tools: []           # Add your tools: ["export_results.py"]
+
+# AI Model configuration
+models:
+  default:
+    model: claude-sonnet-4-5-20250929
+    temperature: 0.3
+    max_tokens: 8000
+
+  # Override for specific stages:
+  # analyze:
+  #   model: claude-opus-4-5-20251101
+  #   temperature: 0.2
+  #   max_tokens: 16000
+
+# Workflow-specific settings
+settings:
+  # Add your workflow-specific configuration here
+  example_setting: "value"
+
+# ===========================================
+# DEPLOYMENT (optional - for Modal deployment)
+# ===========================================
+# Configure deployment with: wat deploy <workflow-name>
+# Prerequisites: pip install modal && modal setup
+
+# deployment:
+#   platform: modal                    # Currently only 'modal' supported
+#
+#   # Schedule (optional - omit for on-demand only)
+#   schedule: weekly                   # Options: daily, weekly, monthly
+#   schedule_day: sunday               # For weekly: monday-sunday
+#   schedule_time: "08:00"             # Time in UTC (24-hour format)
+#
+#   # Optional overrides
+#   # timeout: 1800                    # 30 minutes default
+#   # python_version: "3.11"
