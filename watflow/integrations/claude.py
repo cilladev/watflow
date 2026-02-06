@@ -22,7 +22,7 @@ Example:
 from __future__ import annotations
 
 import os
-from typing import Optional, Callable
+from typing import Callable, Optional
 
 import httpx
 from anthropic import Anthropic
@@ -36,6 +36,7 @@ DEFAULT_TIMEOUT = httpx.Timeout(timeout=1200.0, connect=30.0)
 # =============================================================================
 # Exceptions
 # =============================================================================
+
 
 class ClaudeError(Exception):
     """Base exception for Claude integration."""

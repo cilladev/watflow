@@ -54,13 +54,15 @@ class WorkflowRunner(BaseWorkflowRunner):
 
         # Show header
         console.print()
-        console.print(Panel(
-            f"[bold]{workflow_name}[/bold]\n"
-            f"Started: {self.start_time.strftime('%Y-%m-%d %H:%M:%S')}\n"
-            f"Phases: {len(self.phases)}",
-            title="[blue]Workflow Start[/blue]",
-            border_style="blue",
-        ))
+        console.print(
+            Panel(
+                f"[bold]{workflow_name}[/bold]\n"
+                f"Started: {self.start_time.strftime('%Y-%m-%d %H:%M:%S')}\n"
+                f"Phases: {len(self.phases)}",
+                title="[blue]Workflow Start[/blue]",
+                border_style="blue",
+            )
+        )
 
         try:
             # Validate requirements from config
@@ -68,6 +70,7 @@ class WorkflowRunner(BaseWorkflowRunner):
             result = self.validate_requirements()
             if not result.valid:
                 from watflow.validation import format_validation_error
+
                 console.print(f"[red]{format_validation_error(result)}[/red]")
                 return 1
             console.print("  [green]✓ All requirements met[/green]")
@@ -109,7 +112,7 @@ class WorkflowRunner(BaseWorkflowRunner):
 
         # Skip empty phases
         if not tools:
-            console.print(f"  [dim]No tools configured - skipping[/dim]")
+            console.print("  [dim]No tools configured - skipping[/dim]")
             self.results[phase_name] = []
             return []
 
@@ -148,9 +151,7 @@ class WorkflowRunner(BaseWorkflowRunner):
             tool_path = self.tools_dir / tool
             console.print(f"  Running: {tool}...", end=" ")
 
-            success, stdout, stderr, returncode = self.run_tool_subprocess(
-                tool_path, timeout
-            )
+            success, stdout, stderr, returncode = self.run_tool_subprocess(tool_path, timeout)
 
             if success:
                 console.print("[green]done[/green]")
@@ -178,14 +179,10 @@ class WorkflowRunner(BaseWorkflowRunner):
         results = []
         console.print(f"  Launching {len(tools)} tools...")
 
-        with ProcessPoolExecutor(
-            max_workers=min(len(tools), max_workers)
-        ) as executor:
+        with ProcessPoolExecutor(max_workers=min(len(tools), max_workers)) as executor:
             # Submit all tools
             future_to_tool = {
-                executor.submit(
-                    self.run_tool_subprocess, self.tools_dir / tool, timeout
-                ): tool
+                executor.submit(self.run_tool_subprocess, self.tools_dir / tool, timeout): tool
                 for tool in tools
             }
 
@@ -235,13 +232,15 @@ class WorkflowRunner(BaseWorkflowRunner):
 
         # Show success panel
         console.print()
-        console.print(Panel(
-            f"[bold green]Completed Successfully[/bold green]\n\n"
-            f"Duration: {duration:.1f}s ({duration/60:.1f}m)\n"
-            f"Finished: {end_time.strftime('%Y-%m-%d %H:%M:%S')}",
-            title="[green]Workflow Complete[/green]",
-            border_style="green",
-        ))
+        console.print(
+            Panel(
+                f"[bold green]Completed Successfully[/bold green]\n\n"
+                f"Duration: {duration:.1f}s ({duration / 60:.1f}m)\n"
+                f"Finished: {end_time.strftime('%Y-%m-%d %H:%M:%S')}",
+                title="[green]Workflow Complete[/green]",
+                border_style="green",
+            )
+        )
 
         console.print(table)
 
@@ -258,13 +257,15 @@ class WorkflowRunner(BaseWorkflowRunner):
         duration = (end_time - self.start_time).total_seconds()
 
         console.print()
-        console.print(Panel(
-            f"[bold red]Workflow Failed[/bold red]\n\n"
-            f"Error: {error}\n"
-            f"Duration: {duration:.1f}s",
-            title="[red]Failure[/red]",
-            border_style="red",
-        ))
+        console.print(
+            Panel(
+                f"[bold red]Workflow Failed[/bold red]\n\n"
+                f"Error: {error}\n"
+                f"Duration: {duration:.1f}s",
+                title="[red]Failure[/red]",
+                border_style="red",
+            )
+        )
 
         if self.results:
             console.print(f"Failed at phase: {list(self.results.keys())[-1]}")
@@ -297,5 +298,6 @@ if __name__ == "__main__":
     except Exception as e:
         console.print(f"\n[red]Unexpected error:[/red] {e}", highlight=False)
         import traceback
+
         traceback.print_exc()
         sys.exit(1)

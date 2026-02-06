@@ -13,6 +13,7 @@ import yaml
 
 class ConfigError(Exception):
     """Raised when configuration is invalid or missing."""
+
     pass
 
 
@@ -262,9 +263,7 @@ def get_phase_by_name(
     return None
 
 
-def get_model_config(
-    stage: str, config: Optional[dict[str, Any]] = None
-) -> dict[str, Any]:
+def get_model_config(stage: str, config: Optional[dict[str, Any]] = None) -> dict[str, Any]:
     """
     Get model configuration for a specific stage.
 

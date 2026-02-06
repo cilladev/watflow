@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 
 class EnvError(Exception):
     """Raised when required environment variables are missing or invalid."""
+
     pass
 
 

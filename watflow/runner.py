@@ -12,9 +12,9 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from watflow.config import load_config, get_phases, get_workflow_config, ConfigError
-from watflow.env import load_env, check_env
-from watflow.validation import validate_workflow, ValidationResult
+from watflow.config import ConfigError, get_phases, get_workflow_config, load_config
+from watflow.env import check_env, load_env
+from watflow.validation import ValidationResult, validate_workflow
 
 
 class BaseWorkflowRunner(ABC):
@@ -90,9 +90,7 @@ class BaseWorkflowRunner(ABC):
         return self.workflow_config.get("name", "Unnamed Workflow")
 
     @staticmethod
-    def run_tool_subprocess(
-        tool_path: Path, timeout: int = 120
-    ) -> tuple[bool, str, str, int]:
+    def run_tool_subprocess(tool_path: Path, timeout: int = 120) -> tuple[bool, str, str, int]:
         """
         Execute a tool script in a subprocess.
 

@@ -17,8 +17,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
-from watflow.config import load_config, validate_config, ConfigError
-
+from watflow.config import ConfigError, load_config, validate_config
 
 console = Console()
 
@@ -103,12 +102,14 @@ def main():
 @main.command()
 @click.argument("name")
 @click.option(
-    "--category", "-c",
+    "--category",
+    "-c",
     default="automation",
     help="Category for the workflow (e.g., data-collection, reporting)",
 )
 @click.option(
-    "--description", "-d",
+    "--description",
+    "-d",
     default="",
     help="Description of the workflow",
 )
@@ -122,11 +123,13 @@ def new(name: str, category: str, description: str):
 
     # Check if template exists
     if not template_dir.exists():
-        console.print(Panel(
-            f"Template directory not found:\n{template_dir}",
-            title="[red]Error[/red]",
-            border_style="red",
-        ))
+        console.print(
+            Panel(
+                f"Template directory not found:\n{template_dir}",
+                title="[red]Error[/red]",
+                border_style="red",
+            )
+        )
         raise SystemExit(1)
 
     # Create category directory if needed
@@ -136,11 +139,13 @@ def new(name: str, category: str, description: str):
     # Check if workflow already exists
     workflow_dir = category_dir / name
     if workflow_dir.exists():
-        console.print(Panel(
-            f"Workflow already exists:\n{workflow_dir}",
-            title="[red]Error[/red]",
-            border_style="red",
-        ))
+        console.print(
+            Panel(
+                f"Workflow already exists:\n{workflow_dir}",
+                title="[red]Error[/red]",
+                border_style="red",
+            )
+        )
         raise SystemExit(1)
 
     # Copy template
@@ -161,24 +166,28 @@ def new(name: str, category: str, description: str):
 
     # Add to registry
     registry = load_registry()
-    registry["workflows"].append({
-        "name": name,
-        "category": category,
-        "description": description,
-        "author": os.environ.get("USER", "unknown"),
-        "tags": [],
-    })
+    registry["workflows"].append(
+        {
+            "name": name,
+            "category": category,
+            "description": description,
+            "author": os.environ.get("USER", "unknown"),
+            "tags": [],
+        }
+    )
     save_registry(registry)
 
     # Show success
     console.print()
-    console.print(Panel(
-        f"Created [bold cyan]{name}[/bold cyan]\n"
-        f"Category: [green]{category}[/green]\n"
-        f"Location: {workflow_dir}",
-        title="[green]Workflow Created[/green]",
-        border_style="green",
-    ))
+    console.print(
+        Panel(
+            f"Created [bold cyan]{name}[/bold cyan]\n"
+            f"Category: [green]{category}[/green]\n"
+            f"Location: {workflow_dir}",
+            title="[green]Workflow Created[/green]",
+            border_style="green",
+        )
+    )
 
     console.print("\n[bold]Next steps:[/bold]")
     console.print(f"  [dim]1.[/dim] cd {workflow_dir}")
@@ -190,7 +199,8 @@ def new(name: str, category: str, description: str):
 
 @main.command(name="list")
 @click.option(
-    "--category", "-c",
+    "--category",
+    "-c",
     default=None,
     help="Filter by category",
 )
@@ -200,23 +210,26 @@ def list_workflows(category: Optional[str]):
     workflows = registry.get("workflows", [])
 
     if not workflows:
-        console.print(Panel(
-            "No workflows found.\n"
-            "Create one with: [cyan]wat new my-workflow[/cyan]",
-            title="[yellow]Empty[/yellow]",
-            border_style="yellow",
-        ))
+        console.print(
+            Panel(
+                "No workflows found.\nCreate one with: [cyan]wat new my-workflow[/cyan]",
+                title="[yellow]Empty[/yellow]",
+                border_style="yellow",
+            )
+        )
         return
 
     # Filter by category if specified
     if category:
         workflows = [w for w in workflows if w.get("category") == category]
         if not workflows:
-            console.print(Panel(
-                f"No workflows found in category: [bold]{category}[/bold]",
-                title="[yellow]Empty[/yellow]",
-                border_style="yellow",
-            ))
+            console.print(
+                Panel(
+                    f"No workflows found in category: [bold]{category}[/bold]",
+                    title="[yellow]Empty[/yellow]",
+                    border_style="yellow",
+                )
+            )
             return
 
     # Create table
@@ -255,19 +268,23 @@ def validate(name: str):
     workflow_path = find_workflow(name)
 
     if not workflow_path:
-        console.print(Panel(
-            f"Workflow not found: [bold]{name}[/bold]",
-            title="[red]Error[/red]",
-            border_style="red",
-        ))
+        console.print(
+            Panel(
+                f"Workflow not found: [bold]{name}[/bold]",
+                title="[red]Error[/red]",
+                border_style="red",
+            )
+        )
         raise SystemExit(1)
 
     console.print()
-    console.print(Panel(
-        f"[bold]{workflow_path.name}[/bold]\n{workflow_path}",
-        title="[blue]Validating[/blue]",
-        border_style="blue",
-    ))
+    console.print(
+        Panel(
+            f"[bold]{workflow_path.name}[/bold]\n{workflow_path}",
+            title="[blue]Validating[/blue]",
+            border_style="blue",
+        )
+    )
 
     errors = []
     warnings = []
@@ -336,23 +353,29 @@ def validate(name: str):
     # Summary
     console.print()
     if errors:
-        console.print(Panel(
-            f"[bold red]Failed[/bold red] with {len(errors)} error(s)",
-            border_style="red",
-        ))
+        console.print(
+            Panel(
+                f"[bold red]Failed[/bold red] with {len(errors)} error(s)",
+                border_style="red",
+            )
+        )
         for error in errors:
             console.print(f"  [red]-[/red] {error}")
         raise SystemExit(1)
     elif warnings:
-        console.print(Panel(
-            f"[bold yellow]Passed[/bold yellow] with {len(warnings)} warning(s)",
-            border_style="yellow",
-        ))
+        console.print(
+            Panel(
+                f"[bold yellow]Passed[/bold yellow] with {len(warnings)} warning(s)",
+                border_style="yellow",
+            )
+        )
     else:
-        console.print(Panel(
-            "[bold green]Validation Passed[/bold green]",
-            border_style="green",
-        ))
+        console.print(
+            Panel(
+                "[bold green]Validation Passed[/bold green]",
+                border_style="green",
+            )
+        )
 
 
 @main.command()
@@ -366,28 +389,34 @@ def run(name: str, no_parallel: bool):
     workflow_path = find_workflow(name)
 
     if not workflow_path:
-        console.print(Panel(
-            f"Workflow not found: [bold]{name}[/bold]",
-            title="[red]Error[/red]",
-            border_style="red",
-        ))
+        console.print(
+            Panel(
+                f"Workflow not found: [bold]{name}[/bold]",
+                title="[red]Error[/red]",
+                border_style="red",
+            )
+        )
         raise SystemExit(1)
 
     main_py = workflow_path / "main.py"
     if not main_py.exists():
-        console.print(Panel(
-            f"No main.py found in workflow:\n{workflow_path}",
-            title="[red]Error[/red]",
-            border_style="red",
-        ))
+        console.print(
+            Panel(
+                f"No main.py found in workflow:\n{workflow_path}",
+                title="[red]Error[/red]",
+                border_style="red",
+            )
+        )
         raise SystemExit(1)
 
     console.print()
-    console.print(Panel(
-        f"[bold]{workflow_path.name}[/bold]\n{workflow_path}",
-        title="[blue]Running Workflow[/blue]",
-        border_style="blue",
-    ))
+    console.print(
+        Panel(
+            f"[bold]{workflow_path.name}[/bold]\n{workflow_path}",
+            title="[blue]Running Workflow[/blue]",
+            border_style="blue",
+        )
+    )
     console.print()
 
     # Build command
@@ -429,23 +458,27 @@ def ensure_modal_ready() -> bool:
     """Ensure Modal is installed and authenticated. Returns True if ready."""
     # Check if Modal CLI is installed
     if not check_modal_installed():
-        console.print(Panel(
-            "[red]Modal CLI not installed[/red]\n\n"
-            "Install with: [cyan]pip install modal[/cyan]",
-            title="[red]Setup Required[/red]",
-            border_style="red",
-        ))
+        console.print(
+            Panel(
+                "[red]Modal CLI not installed[/red]\n\n"
+                "Install with: [cyan]pip install modal[/cyan]",
+                title="[red]Setup Required[/red]",
+                border_style="red",
+            )
+        )
         return False
 
     # Check if Modal is authenticated
     if not check_modal_authenticated():
-        console.print(Panel(
-            "[yellow]Modal CLI not authenticated[/yellow]\n\n"
-            "Run: [cyan]modal setup[/cyan]\n\n"
-            "This will open your browser to authenticate with Modal.",
-            title="[yellow]Setup Required[/yellow]",
-            border_style="yellow",
-        ))
+        console.print(
+            Panel(
+                "[yellow]Modal CLI not authenticated[/yellow]\n\n"
+                "Run: [cyan]modal setup[/cyan]\n\n"
+                "This will open your browser to authenticate with Modal.",
+                title="[yellow]Setup Required[/yellow]",
+                border_style="yellow",
+            )
+        )
 
         # Ask if user wants to run modal setup now
         if click.confirm("Run 'modal setup' now?", default=True):
@@ -485,8 +518,13 @@ def schedule_to_cron(config: dict) -> Optional[str]:
 
     # Map day names to cron numbers (0=Sunday, 6=Saturday)
     day_map = {
-        "sunday": 0, "monday": 1, "tuesday": 2, "wednesday": 3,
-        "thursday": 4, "friday": 5, "saturday": 6,
+        "sunday": 0,
+        "monday": 1,
+        "tuesday": 2,
+        "wednesday": 3,
+        "thursday": 4,
+        "friday": 5,
+        "saturday": 6,
     }
 
     if schedule == "daily":
@@ -647,21 +685,25 @@ def deploy(name: str, dry_run: bool):
     workflow_path = find_workflow(name)
 
     if not workflow_path:
-        console.print(Panel(
-            f"Workflow not found: [bold]{name}[/bold]",
-            title="[red]Error[/red]",
-            border_style="red",
-        ))
+        console.print(
+            Panel(
+                f"Workflow not found: [bold]{name}[/bold]",
+                title="[red]Error[/red]",
+                border_style="red",
+            )
+        )
         raise SystemExit(1)
 
     workflow_name = workflow_path.name
 
     console.print()
-    console.print(Panel(
-        f"[bold]{workflow_name}[/bold]\n{workflow_path}",
-        title="[blue]Deploying to Modal[/blue]",
-        border_style="blue",
-    ))
+    console.print(
+        Panel(
+            f"[bold]{workflow_name}[/bold]\n{workflow_path}",
+            title="[blue]Deploying to Modal[/blue]",
+            border_style="blue",
+        )
+    )
     console.print()
 
     # Check Modal is ready (unless dry-run)
@@ -683,13 +725,15 @@ def deploy(name: str, dry_run: bool):
 
     if dry_run:
         console.print()
-        console.print(Panel(
-            f"[yellow]Dry run complete[/yellow]\n\n"
-            f"Generated: [cyan]{output_path}[/cyan]\n\n"
-            f"To deploy, run: [cyan]wat deploy {name}[/cyan]",
-            title="[yellow]Dry Run[/yellow]",
-            border_style="yellow",
-        ))
+        console.print(
+            Panel(
+                f"[yellow]Dry run complete[/yellow]\n\n"
+                f"Generated: [cyan]{output_path}[/cyan]\n\n"
+                f"To deploy, run: [cyan]wat deploy {name}[/cyan]",
+                title="[yellow]Dry Run[/yellow]",
+                border_style="yellow",
+            )
+        )
         return
 
     # Step 2: Create Modal secret from .env
@@ -722,21 +766,25 @@ def deploy(name: str, dry_run: bool):
             schedule_info += f" at {schedule_time} UTC"
 
         console.print()
-        console.print(Panel(
-            f"[green]Deployed successfully![/green]\n\n"
-            f"Dashboard: [cyan]https://modal.com/apps/{workflow_name}[/cyan]\n"
-            f"Run now: [cyan]modal run modal_app.py::run_workflow[/cyan]"
-            f"{schedule_info}",
-            title="[green]Success[/green]",
-            border_style="green",
-        ))
+        console.print(
+            Panel(
+                f"[green]Deployed successfully![/green]\n\n"
+                f"Dashboard: [cyan]https://modal.com/apps/{workflow_name}[/cyan]\n"
+                f"Run now: [cyan]modal run modal_app.py::run_workflow[/cyan]"
+                f"{schedule_info}",
+                title="[green]Success[/green]",
+                border_style="green",
+            )
+        )
     else:
         console.print()
-        console.print(Panel(
-            f"[red]Deployment failed[/red]\n\n{result.stderr}",
-            title="[red]Error[/red]",
-            border_style="red",
-        ))
+        console.print(
+            Panel(
+                f"[red]Deployment failed[/red]\n\n{result.stderr}",
+                title="[red]Error[/red]",
+                border_style="red",
+            )
+        )
         raise SystemExit(1)
 
 

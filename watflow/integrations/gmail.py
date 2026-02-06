@@ -132,9 +132,7 @@ class GmailMessage:
     def trash(self) -> None:
         """Move this message to trash."""
         if self._client:
-            self._client.service.users().messages().trash(
-                userId="me", id=self.id
-            ).execute()
+            self._client.service.users().messages().trash(userId="me", id=self.id).execute()
 
     def add_label(self, label: str) -> None:
         """Add a label to this message."""
@@ -261,9 +259,7 @@ class GmailClient:
         """
         # Load cached token
         if self.token_file.exists():
-            self._creds = Credentials.from_authorized_user_file(
-                str(self.token_file), self.scopes
-            )
+            self._creds = Credentials.from_authorized_user_file(str(self.token_file), self.scopes)
 
         # Refresh or get new token
         if not self._creds or not self._creds.valid:
@@ -301,7 +297,7 @@ class GmailClient:
         """Lazy-load authenticated Gmail API service."""
         if self._service is None:
             self.authenticate()
-        return self._service  # type: ignore
+        return self._service
 
     # -------------------------------------------------------------------------
     # Sending
@@ -375,9 +371,7 @@ class GmailClient:
                         )
 
             # Encode and send
-            encoded_message = base64.urlsafe_b64encode(
-                mime_message.as_bytes()
-            ).decode()
+            encoded_message = base64.urlsafe_b64encode(mime_message.as_bytes()).decode()
 
             result = (
                 self.service.users()
@@ -496,9 +490,7 @@ class GmailClient:
 
     def _parse_message(self, msg: dict) -> GmailMessage:
         """Parse Gmail API message response into GmailMessage."""
-        headers = {
-            h["name"]: h["value"] for h in msg.get("payload", {}).get("headers", [])
-        }
+        headers = {h["name"]: h["value"] for h in msg.get("payload", {}).get("headers", [])}
 
         # Extract body (handle multipart)
         body_plain, body_html = self._extract_body(msg.get("payload", {}))
@@ -615,6 +607,4 @@ class GmailClient:
             body["removeLabelIds"] = remove
 
         if body:
-            self.service.users().messages().modify(
-                userId="me", id=message_id, body=body
-            ).execute()
+            self.service.users().messages().modify(userId="me", id=message_id, body=body).execute()
