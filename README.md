@@ -1,6 +1,7 @@
 # WATFlow
 
-WAT Framework for AI-powered workflow automations.
+Build reliable AI automation workflows with WATFlow.
+
 
 ## Installation
 
