@@ -18,6 +18,7 @@ from rich.panel import Panel
 from rich.table import Table
 
 from watflow.config import ConfigError, load_config, validate_config
+from watflow.validation import validate_workflow
 
 console = Console()
 
@@ -349,6 +350,45 @@ def validate(name: str):
         else:
             warnings.append("No .py files in tools/")
             console.print("  [yellow]WARN[/yellow] No .py files in tools/")
+
+    # Check requirements (env vars, files) from config
+    console.print("\n[bold]Requirements:[/bold]")
+    if config_path.exists():
+        try:
+            original_cwd = Path.cwd()
+            os.chdir(workflow_path)
+            try:
+                config = load_config(use_cache=False)
+                req_result = validate_workflow(config, workflow_path)
+
+                requirements = config.get("requirements", {})
+                env_vars = requirements.get("env", [])
+                req_files = requirements.get("files", [])
+
+                if not env_vars and not req_files:
+                    console.print("  [dim]No requirements defined in config.yaml[/dim]")
+                else:
+                    # Check env vars
+                    for var in env_vars:
+                        if var in req_result.missing_env:
+                            errors.append(f"Missing env: {var}")
+                            console.print(f"  [red]MISSING[/red] ${var}")
+                        else:
+                            console.print(f"  [green]OK[/green] ${var}")
+
+                    # Check files
+                    for filepath in req_files:
+                        if filepath in req_result.missing_files:
+                            errors.append(f"Missing file: {filepath}")
+                            console.print(f"  [red]MISSING[/red] {filepath}")
+                        else:
+                            console.print(f"  [green]OK[/green] {filepath}")
+            finally:
+                os.chdir(original_cwd)
+        except ConfigError:
+            console.print("  [dim]Could not check (config invalid)[/dim]")
+    else:
+        console.print("  [dim]Could not check (no config.yaml)[/dim]")
 
     # Summary
     console.print()
