@@ -8,7 +8,7 @@
 # Workflow fails fast with clear error messages if missing.
 
 requirements:
-  env: []           # e.g., ["API_KEY", "DATABASE_URL"]
+  env: ['ANTHROPIC_API_KEY']           # e.g., ["API_KEY", "DATABASE_URL"]
   files: []         # e.g., ["credentials.json", "token.json"]
 
 # ===========================================
